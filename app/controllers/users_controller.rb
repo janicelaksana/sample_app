@@ -4,8 +4,14 @@ class UsersController < ApplicationController
   before_filter :admin_user, only: :destroy
 
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User destroyed."
+    user = User.find(params[:id])
+    if ((current_user.admin?)&&(current_user==user))
+      flash[:error] = "You are not allowed to delete yourself as an admin."
+    else
+      user.destroy
+      flash[:success] = "User destroyed."
+    end
+
     redirect_to users_url
   end
 
